@@ -1,11 +1,18 @@
 <template>
   <div class="dropdown-container">
-    <Button @buttonClick="toggle" :label="label" :type="'dropdown'"/>
+    <Button 
+      @buttonClick="toggle" 
+      :label="selection.label ? `${label}: ${selection.label}`: label" 
+      :type="'dropdown'"/>
     <Transition name="slide">
     <div v-if="active" class="options-container">
       <ul class="options">
-        <li v-for="(option, index) of options" :key="index" class="option">
-          {{ option }}
+        <li 
+          v-for="(option, index) of options" 
+          :key="index" class="option"
+          @click="handleDropdownSelection(option)"
+          :class="{'selected' : option === selection}">
+          {{ option.label }}
         </li>
       </ul>
     </div>
@@ -24,15 +31,24 @@ export default {
   props: {
     options: Array,
     label: String,
+    name: String
   },
   data(){
     return {
-      active: false
+      active: false,
+      selection: {
+        label: '',
+        value: null,
+      }
     }
   },
   methods: {
     toggle(){
       this.active = !this.active;
+    },
+    handleDropdownSelection(option){
+      this.selection = this.selection !== option ? option : {label: '', value: null};
+      this.$emit('dropdownSelection', {dropdown: this.name, ...this.selection});
     }
   }
 }
@@ -40,8 +56,8 @@ export default {
 
 <style lang="scss" scoped>
 .dropdown-container {
-  display: inline-block;
-  width: 50%;
+  display: block;
+  width: 100%;
   position: relative;
 
   .options-container {
@@ -50,6 +66,7 @@ export default {
     height: 25rem;
     overflow-y: scroll;
     background-color: white;
+    z-index: 1;
 
     .options {
       text-align: left;
@@ -58,6 +75,11 @@ export default {
       .option {
         list-style-type: none;
         cursor: pointer;
+
+        &.selected {
+          background-color: black;
+          color: white;
+        }
 
         &:hover{
           background-color: black;

@@ -1,15 +1,27 @@
 <template>
   <div class="daily-tracker-container">
     <h1>
-    Daily Tracker
+    Daily Sleep Tracker
     </h1>
     <div class="widget-wrapper">
       <div class="dropdowns-container">
-        <Dropdown :options="options" :label="'Duration in bed'"/>
-        <Dropdown :options="options" :label="'Duration asleep'"/>
+        <Dropdown
+          @dropdownSelection="handleDropdownSelection"
+          :options="options" 
+          :label="'Duration in bed'"
+          :name="'bed'"
+        />
+        <Dropdown
+          @dropdownSelection="handleDropdownSelection"
+          :options="options" 
+          :label="'Duration asleep'"
+          :name="'sleep'"
+        />
       </div>
       <div class="submit-container">
-        <Button :label="'Calculate'"/>
+        <Button 
+          :label="'Calculate'" 
+          :disabled="!canSubmit"/>
       </div>
     </div>
   </div>
@@ -25,23 +37,49 @@ export default {
     Dropdown,
     Button
   },
+  data(){
+    return {
+      bedDataSelection: null,
+      sleepDataSelection: null,
+    }
+  },
   computed: {
     options(){
       const options = [];
       let hours = 0;
       let min = 30;
       while(hours <= 24){
+        const value = hours + (min === 30 ? 0.5 : 0);
         if(min === 30){
-          if(hours !== 24)options.push(`${hours} hrs. and ${min} min.`)
+          if(hours !== 24)options.push({
+            label: `${hours} hrs. and ${min} min.`,
+            value
+          });
           min = 0;
           hours ++;
         }
         else{
-          options.push(`${hours} hrs.`)
+          options.push({
+            label:`${hours} hrs.`,
+            value
+          });
           min = 30;
         }
       }
       return options;
+    },
+    canSubmit(){
+      return this.bedDataSelection && this.sleepDataSelection;
+    }
+  },
+  methods: {
+    handleDropdownSelection(selection){
+      if(selection.dropdown === "bed"){
+        this.bedDataSelection = selection.value
+      }
+      else{
+        this.sleepDataSelection = selection.value;
+      }
     }
   }
 }

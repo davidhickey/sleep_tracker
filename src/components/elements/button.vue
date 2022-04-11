@@ -1,7 +1,8 @@
 <template>
   <button 
     @click="$emit('buttonClick')" 
-    :class="type">
+    :class="type"
+    :disabled="disabled">
     {{ label }}
   </button>
 </template>
@@ -10,8 +11,12 @@
 export default {
   name: 'Button',
   props: {
-      label: String,
-      type: String
+    label: String,
+    type: String,
+    disabled: {
+      default: false,
+      type: Boolean
+    },
   }
 }
 </script>
