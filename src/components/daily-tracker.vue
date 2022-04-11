@@ -7,13 +7,13 @@
       <div class="dropdowns-container">
         <Dropdown
           @dropdownSelection="handleDropdownSelection"
-          :options="options" 
+          :options="bedOptions" 
           :label="'Duration in bed'"
           :name="'bed'"
         />
         <Dropdown
           @dropdownSelection="handleDropdownSelection"
-          :options="options" 
+          :options="sleepOptions" 
           :label="'Duration asleep'"
           :name="'sleep'"
         />
@@ -26,7 +26,7 @@
           @buttonClick="onSubmit"/>
       </div>
       <div class="score-results-container">
-        <span v-if="apiStatus.status === 'success'">
+        <span v-if="apiStatus.status === 'success' && showScore">
           Your sleep score is 
           <b class="sleep-score">
             {{this.calculateScore()}}
@@ -90,6 +90,16 @@ export default {
       }
       return options;
     },
+    bedOptions(){
+      return this.duration_asleep 
+        ? this.options.filter(option => option.value >= this.duration_asleep) 
+        : this.options;
+    },
+    sleepOptions(){
+      return this.duration_in_bed 
+        ? this.options.filter(option => option.value <= this.duration_in_bed) 
+        : this.options;
+    },
     canSubmit(){
       return this.duration_in_bed && this.duration_asleep;
     }
@@ -102,6 +112,8 @@ export default {
       else{
         this.duration_asleep = selection.value;
       }
+
+      this.showScore = false;
     },
     calculateScore(){
       return Math.round(100 * (this.duration_asleep / this.duration_in_bed));
@@ -165,7 +177,11 @@ export default {
   }
 
   .submit-container {
-    margin-bottom: 1rem;
+    margin-bottom: 4rem;
+  }
+
+  .error {
+    color: red;
   }
 }
 
