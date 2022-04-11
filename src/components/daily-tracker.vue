@@ -21,7 +21,14 @@
       <div class="submit-container">
         <Button 
           :label="'Calculate'" 
-          :disabled="!canSubmit"/>
+          :disabled="!canSubmit"
+          @buttonClick="onSubmit"/>
+      </div>
+      <div class="score-results-container">
+        {{ apiStatusText }}
+        <div class="sleep-score-container">
+          <span v-if="showScore"> {{this.calculateScore()}}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -39,8 +46,11 @@ export default {
   },
   data(){
     return {
-      bedDataSelection: null,
-      sleepDataSelection: null,
+      duration_in_bed: null,
+      duration_asleep: null,
+      showScore: false,
+      apiStatusText: '',
+      scoreOutputText: '',
     }
   },
   computed: {
@@ -69,17 +79,48 @@ export default {
       return options;
     },
     canSubmit(){
-      return this.bedDataSelection && this.sleepDataSelection;
+      return this.duration_in_bed && this.duration_asleep;
     }
   },
   methods: {
     handleDropdownSelection(selection){
       if(selection.dropdown === "bed"){
-        this.bedDataSelection = selection.value
+        this.duration_in_bed = selection.value
       }
       else{
-        this.sleepDataSelection = selection.value;
+        this.duration_asleep = selection.value;
       }
+    },
+    calculateScore(){
+      return Math.round(100 * (this.duration_asleep / this.duration_in_bed));
+    },
+    onSubmit(){
+      this.scoreOutputText = this.calculateScore();
+      this.apiStatusText = 'Loading';
+      this.postData();
+    },
+    async postData(){
+      const url = `https://6254587289f28cf72b5c4e25.mockapi.io/api/staging/sleep_score/`
+      const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: 1,
+          score: this.calculateScore()
+        })
+      });
+
+      if(!res.ok){
+        console.error('API failed ', res);
+        this.apiStatusText = 'Failed to save Sleep Score. Please try again later.';
+        this.showScore = false;
+        return null
+      }
+      else {
+        const data = await res.json();        
+        this.apiStatusText = '';
+        this.showScore = true;
+        return data;
+      } 
     }
   }
 }
