@@ -59,6 +59,7 @@ export default {
   display: block;
   width: 100%;
   position: relative;
+  margin-bottom: 1rem;
 
   .options-container {
     position: absolute;

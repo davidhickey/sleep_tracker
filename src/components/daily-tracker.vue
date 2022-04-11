@@ -25,10 +25,19 @@
           @buttonClick="onSubmit"/>
       </div>
       <div class="score-results-container">
-        {{ apiStatusText }}
-        <div class="sleep-score-container">
-          <span v-if="showScore"> {{this.calculateScore()}}</span>
-        </div>
+        <span v-if="apiStatus.status === 'success'">
+          Your sleep score is 
+          <b class="sleep-score">
+            {{this.calculateScore()}}
+          </b>
+          !
+        </span>
+        <span v-else-if="apiStatus.status === 'error'" class="error">
+          {{ apiStatus.text }}
+        </span>
+        <span v-else>
+          {{ apiStatus.text }}
+        </span>
       </div>
     </div>
   </div>
@@ -49,8 +58,10 @@ export default {
       duration_in_bed: null,
       duration_asleep: null,
       showScore: false,
-      apiStatusText: '',
-      scoreOutputText: '',
+      apiStatus: {
+        text: '',
+        status: ''
+      },
     }
   },
   computed: {
@@ -96,7 +107,10 @@ export default {
     },
     onSubmit(){
       this.scoreOutputText = this.calculateScore();
-      this.apiStatusText = 'Loading';
+      this.apiStatus = {
+        text: 'Loading',
+        status: 'loading'
+      };
       this.postData();
     },
     async postData(){
@@ -111,14 +125,26 @@ export default {
 
       if(!res.ok){
         console.error('API failed ', res);
-        this.apiStatusText = 'Failed to save Sleep Score. Please try again later.';
-        this.showScore = false;
+        // TODO: remove setTimeout after demo
+        setTimeout(() => {
+          this.apiStatus = {
+            text:'Failed to save Sleep Score. Please try again later.',
+            status: 'error',
+          }
+          this.showScore = false;
+        }, 2000);
         return null
       }
       else {
-        const data = await res.json();        
-        this.apiStatusText = '';
-        this.showScore = true;
+        const data = await res.json();    
+        // TODO: remove setTimeout after demo
+        setTimeout(() => {
+          this.apiStatus = {
+            text: '',
+            status: 'success'
+          };
+          this.showScore = true;
+        }, 2000);
         return data;
       } 
     }
