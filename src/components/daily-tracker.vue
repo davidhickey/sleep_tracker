@@ -26,10 +26,10 @@
           @buttonClick="onSubmit"/>
       </div>
       <div class="score-results-container">
-        <span v-if="apiStatus.status === 'success' && showScore">
+        <span v-if="apiStatus.status === 'success' && score.show">
           Your sleep score is 
           <b class="sleep-score">
-            {{this.calculateScore()}}
+            {{score.value}}
           </b>
           !
         </span>
@@ -58,7 +58,10 @@ export default {
     return {
       duration_in_bed: null,
       duration_asleep: null,
-      showScore: false,
+      score: {
+        show: false,
+        value: null
+      }, 
       apiStatus: {
         text: '',
         status: ''
@@ -66,6 +69,7 @@ export default {
     }
   },
   computed: {
+    //builds dropdown options
     options(){
       const options = [];
       let hours = 0;
@@ -90,11 +94,13 @@ export default {
       }
       return options;
     },
+    //updates options for bed dropdown depending on sleep option value
     bedOptions(){
       return this.duration_asleep 
         ? this.options.filter(option => option.value >= this.duration_asleep) 
         : this.options;
     },
+    //updates options for sleep dropdown depending on bed option value
     sleepOptions(){
       return this.duration_in_bed 
         ? this.options.filter(option => option.value <= this.duration_in_bed) 
@@ -113,13 +119,12 @@ export default {
         this.duration_asleep = selection.value;
       }
 
-      this.showScore = false;
+      this.score = {show: false, value: null};
     },
     calculateScore(){
       return Math.round(100 * (this.duration_asleep / this.duration_in_bed));
     },
     onSubmit(){
-      this.scoreOutputText = this.calculateScore();
       this.apiStatus = {
         text: 'Loading',
         status: 'loading'
@@ -144,7 +149,7 @@ export default {
             text:'Failed to save Sleep Score. Please try again later.',
             status: 'error',
           }
-          this.showScore = false;
+          this.score = {show: false, value: null};
         }, 2000);
         return null
       }
@@ -156,7 +161,7 @@ export default {
             text: '',
             status: 'success'
           };
-          this.showScore = true;
+          this.score= {show: true, value: this.calculateScore()}
         }, 2000);
         return data;
       } 
