@@ -22,6 +22,7 @@
         <Button 
           :label="'Calculate'" 
           :disabled="!canSubmit"
+          :state="!canSubmit ? 'disabled' : 'selected'"
           @buttonClick="onSubmit"/>
       </div>
       <div class="score-results-container">
@@ -161,6 +162,10 @@ export default {
   @media only screen and (min-width: 64rem){
     max-width: 62rem;
     margin: 0 auto;
+  }
+
+  .submit-container {
+    margin-bottom: 1rem;
   }
 }
 

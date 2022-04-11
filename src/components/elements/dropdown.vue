@@ -3,7 +3,8 @@
     <Button 
       @buttonClick="toggle" 
       :label="selection.label ? `${label}: ${selection.label}`: label" 
-      :type="'dropdown'"/>
+      :type="'dropdown'"
+      :state="selection.label ? 'selected' : ''"/>
     <Transition name="slide">
     <div v-if="active" class="options-container">
       <ul class="options">
@@ -71,19 +72,21 @@ export default {
 
     .options {
       text-align: left;
-      padding-left: .5rem;
+      padding-left: 0;
 
       .option {
+        padding-left: .5rem;
+
         list-style-type: none;
         cursor: pointer;
 
         &.selected {
-          background-color: black;
+          background-color: #0a1153;
           color: white;
         }
 
         &:hover{
-          background-color: black;
+          background-color: #0a1153;
           color: white;
         }
       }
