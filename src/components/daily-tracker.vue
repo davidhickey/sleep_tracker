@@ -27,16 +27,9 @@
       </div>
       <div class="score-results-container">
         <span v-if="apiStatus.status === 'success' && score.show">
-          Your sleep score is 
-          <b class="sleep-score">
-            {{score.value}}
-          </b>
-          !
+          Your sleep score is <b class="sleep-score">{{score.value}}</b>!
         </span>
-        <span v-else-if="apiStatus.status === 'error'" class="error">
-          {{ apiStatus.text }}
-        </span>
-        <span v-else>
+        <span v-else :class="{'error' : apiStatus.status === 'error'}">
           {{ apiStatus.text }}
         </span>
       </div>
@@ -120,18 +113,16 @@ export default {
       }
 
       this.score = {show: false, value: null};
+      this.apiStatus = {text: '', status: ''};
     },
     calculateScore(){
       return Math.round(100 * (this.duration_asleep / this.duration_in_bed));
     },
     onSubmit(){
-      this.apiStatus = {
-        text: 'Loading',
-        status: 'loading'
-      };
       this.postData();
     },
     async postData(){
+      this.apiStatus = {text: 'Loading', status: 'loading'};
       const url = `https://6254587289f28cf72b5c4e25.mockapi.io/api/staging/sleep_score/`
       const res = await fetch(url, {
         method: 'POST',
