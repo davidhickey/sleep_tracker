@@ -2,6 +2,8 @@
 ## Project Description
 Builds a widget that allows a user to select the amount of time they were in bed and the amount of time they were asleep the night before. On click of "Calculate", their sleep score is posted to a DB and is displayed in the UI. 
 
+Created using the vue cli - https://cli.vuejs.org/.
+
 ## Project setup
 ```
 npm install
